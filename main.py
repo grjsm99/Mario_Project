@@ -1,11 +1,10 @@
 from pico2d import *
 from mario import Mario
-from maptile1 import Mapset
+from maptile2 import Mapset
 import math
 
 
 Tilelist = Mapset
-
 MW, MH = 1024, 768
 
 open_canvas(MW, MH)
@@ -69,6 +68,7 @@ def draw_tileset():
             timg.clip_draw(Tilelist[i].sptype*32, 0, 32, 32, Tilelist[i].hbleft + 16 - cmpPos, Tilelist[i].hbdown + 16)
 
 
+chr.eat_Mushroom()
 while running:
     clear_canvas()
     cmpPos = chr.rtView()
