@@ -1,6 +1,5 @@
 from io import TextIOWrapper
 from mario import Block
-from maptile1 import Mapset
 from pico2d import *
 import re
 MW, MH = 1024, 768
@@ -123,10 +122,10 @@ def addBlock(x, y, bMode):
 
 while(running):
     if camMove == 1:
-        camPos += 3
+        camPos += 6
     elif camMove == 2:
-        if camPos>=3:
-            camPos -= 3
+        if camPos>=6:
+            camPos -= 6
         else: camPos = 0
     clear_canvas()
     draw_tileset()
