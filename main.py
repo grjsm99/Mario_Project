@@ -1,16 +1,27 @@
 from pico2d import *
 from mario import Mario
+
 from maptile2 import Mapset
+
 import math
+
+
+BLOCK_TYPES = 8
 
 
 Tilelist = Mapset
 MW, MH = 1024, 768
 
 open_canvas(MW, MH)
-map_bg = load_image('bg.jpg')
-timg = load_image('block32_pr.png')
-mimg = load_image('mario_t.png')
+from frac import Frac
+map_bg = load_image('./img/bg.jpg')
+fimg = load_image('./img/frac.png')
+bimglist = []
+fraclist = []
+for i in range(BLOCK_TYPES):
+    bimglist.append(load_image("./img/b%d.png" % i))
+
+
 camPos = 0
 backPos = 0
 
@@ -42,9 +53,11 @@ def handle_events():
             if event.key == SDLK_DOWN:
                 chr.chuplook(2)
             if event.key == SDLK_SPACE and chr.isjump == False:
-                chr.jump(10)
+                chr.jump(8.3)
+                print(len(fraclist))
             if event.key == SDLK_a:
-                chr.hit()
+                #chr.hit()
+                Tilelist[5].dl = True
         if event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT:
                 isRight = False   
@@ -65,7 +78,34 @@ def draw_tileset():
     global cmpPos
     for i in range(len(Tilelist)):
         if Tilelist[i].hbright - cmpPos >= 0 and Tilelist[i].hbleft - cmpPos <= MW:
-            timg.clip_draw(Tilelist[i].sptype*32, 0, 32, 32, Tilelist[i].hbleft + 16 - cmpPos, Tilelist[i].hbdown + 16)
+            if Tilelist[i].dl == True:
+                draw_frac(Tilelist[i])
+                del Tilelist[i]
+                break
+    for i in range(len(Tilelist)):
+        if Tilelist[i].hbright - cmpPos >= 0 and Tilelist[i].hbleft - cmpPos <= MW:
+           
+            Tilelist[i].ani()
+            bimglist[Tilelist[i].sptype].clip_draw(Tilelist[i].frame * 32, 0, 32, 32, Tilelist[i].hbleft + 16 - cmpPos, Tilelist[i].hbdown + 16)
+
+    if len(fraclist) > 0: # 조각 그리기
+        for i in range(len(fraclist)): 
+            if fraclist[i].y < -16:
+                del fraclist[i]
+                return
+            fraclist[i].draw(cmpPos)
+    
+        
+
+def draw_frac(t):
+    global fraclist
+    cx = t.hbleft + 16
+    cy = t.hbup + 16
+    print((cx, cy))
+    fraclist.append(Frac(cx, cy, -2, 1))
+    fraclist.append(Frac(cx, cy, -2, 2))
+    fraclist.append(Frac(cx, cy, 2, 1))
+    fraclist.append(Frac(cx, cy, 2, 2))
 
 
 chr.eat_Mushroom()
@@ -85,7 +125,7 @@ while running:
     draw_tileset()
 
 
-    chr.draw(mimg, Tilelist)
+    chr.draw(Tilelist)
     chr.xyrun(0,0)
     update_canvas()
 

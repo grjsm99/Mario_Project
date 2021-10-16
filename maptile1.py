@@ -1,5 +1,4 @@
-from mario import Block
-
+from Block import Block
 
 Mapset = [ 
     

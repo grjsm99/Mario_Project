@@ -1,17 +1,20 @@
 from io import TextIOWrapper
-from mario import Block
+from Block import Block
 from pico2d import *
 import re
 MW, MH = 1024, 768
-BLOCK_TYPES = 5
+BLOCK_TYPES = 8
 FILE_NAME = "maptile2.py"
 Load_Tilelist = True  # False = 해당 파일이름으로 새파일 생성, True = 해당 파일이름의 파일 수정
 
 
 open_canvas(MW, MH)
-map_bg = load_image('bg.jpg')
-timg = load_image('block32_pr.png')
-mimg = load_image('mario_t.png')
+map_bg = load_image('./img/bg.jpg')
+timg = load_image('./img/block32_pr.png')
+bimglist = []
+for i in range(BLOCK_TYPES):
+    bimglist.append(load_image("./img/b%d.png" % i))
+
 camPos = 0
 backPos = 0
 Tilelist = list()
@@ -82,7 +85,7 @@ def handle_events():
             if event.key == SDLK_s:
                 Tilelist.sort(key=lambda c: c.x)
                 f = open(FILE_NAME, 'w')
-                f.write("from mario import Block\n")
+                f.write("from Block import Block\n")
                 f.write("Mapset = [\n")
                 for i in range(len(Tilelist)):
                     f.write("Block(%d, %d, %d),\n" % (Tilelist[i].hbleft // 32 , Tilelist[i].hbup // 32 , Tilelist[i].sptype))
@@ -99,7 +102,7 @@ def draw_tileset():
     global blockSelect
     for i in range(len(Tilelist)):
         if Tilelist[i].hbright - camPos >= 0 and Tilelist[i].hbleft - camPos <= MW:
-            timg.clip_draw(Tilelist[i].sptype*32, 0, 32, 32, Tilelist[i].hbleft + 16 - camPos, Tilelist[i].hbdown + 16)
+            bimglist[Tilelist[i].sptype].clip_draw(Tilelist[i].frame * 32, 0, 32, 32, Tilelist[i].hbleft + 16 - camPos, Tilelist[i].hbdown + 16)
     if blockSelect == True:
         timg.draw_to_origin(0,MH-32)
 
