@@ -159,6 +159,7 @@ class Mario:
             if self.xpos + self.xsp > 0: self.xpos += self.xsp
             self.ypos += self.ysp
         self.chView()
+        
 
         if self.isStop() == True:
             if self.uplook == 1:
