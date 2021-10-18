@@ -1,11 +1,11 @@
+from Component import *
 
-
-class Block:
+class Block(Component):
     def __init__(self, left, up, spt):
         self.x = left
         self.y = up
-        self.hbleft = left * 32
-        self.hbup = up * 32
+        self.hbleft = self.x * 32
+        self.hbup = self.y * 32
         self.hbdown = self.hbup - 32
         self.hbright = self.hbleft + 32
         self.sptype = spt
@@ -14,6 +14,7 @@ class Block:
         self.subframe = 0
         self.frrate = 0
         self.dl = False
+
         if spt == 0 or spt == 6 or spt == 7:
             self.ishbox = False
             self.island = True

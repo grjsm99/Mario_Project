@@ -56,8 +56,7 @@ def handle_events():
                 chr.jump(8.3)
                 print(len(fraclist))
             if event.key == SDLK_a:
-                #chr.hit()
-                Tilelist[5].dl = True
+                running = False
         if event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT:
                 isRight = False   
@@ -131,4 +130,4 @@ while running:
 
     handle_events()
     delay(0.01)
-close_canvas()
+#close_canvas()
