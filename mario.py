@@ -63,6 +63,7 @@ class Mario(Gravity):
         if type==1: # y
             self.ysp = speed
 
+        
     def isNear(self, t):
         return True
 
@@ -74,6 +75,19 @@ class Mario(Gravity):
     def hit(self):
         self.mode = 0
 
+    def CollideMob(self, moblist):
+        cleft = self.xpos + self.xsp
+        cright = self.xpos + self.width + self.xsp
+        cdown = self.ypos
+        cup = self.ypos + self.height
+        for i in range(len(moblist)):
+            if self.ysp < 0 and (cleft < moblist[i].xpos + moblist[i].width) and (cright > moblist[i].xpos) and cdown < moblist[i].ypos + moblist[i].height and not cup < moblist[i].ypos + moblist[i].height: # 몹 밟음
+                print(cdown, self.ysp, moblist[i].up, moblist[i].down)
+                self.ysp = 8
+                self.isjump = True
+                print(cleft, cright, moblist[i].left, moblist[i].right)
+
+                del moblist[i] 
 
     def motionUpdate(self, tileset):
         

@@ -129,7 +129,7 @@ def handle_events():
                 f.write("]\n")
                 f.write("Moblist = [\n")
                 for i in range(len(Moblist)):
-                    f.write("Mob(%d, %d, %d),\n" % (Moblist[i].left // 32 , Moblist[i].up // 32 - 1, Moblist[i].type))
+                    f.write("Mob(%d, %d, %d),\n" % (Moblist[i].left // 32 , Moblist[i].up // 32, Moblist[i].type))
                 f.write("]\n")
                 f.close()
         if event.type == SDL_KEYUP:
@@ -145,7 +145,7 @@ def draw_tileset(typ):
             bimglist[Tilelist[i].sptype].clip_draw(Tilelist[i].frame * 32, 0, 32, 32, Tilelist[i].hbleft + 16 - camPos, Tilelist[i].hbdown + 16)
     for i in range(len(Moblist)):
         if Moblist[i].right - camPos >= 0 and Moblist[i].left - camPos <= MW:
-            mimglist[Moblist[i].type].clip_draw(Moblist[i].frame * 32, 0, 32, Moblist[i].height, Moblist[i].xpos + 16 - camPos, Moblist[i].ypos - 16)
+            mimglist[Moblist[i].type].clip_draw(Moblist[i].frame * 32, 0, 32, Moblist[i].height, Moblist[i].xpos + 16 - camPos, Moblist[i].ypos + Moblist[i].height / 2)
     if blockSelect == True:
         timg.draw_to_origin(0, MH - 32)
     if MobSelect == True:
@@ -165,14 +165,14 @@ def checkExist(x, y, type):
     if type == 1:
         for i in range(len(Moblist)):
             x1 = Moblist[i].xpos // 32
-            y1 = Moblist[i].ypos // 32
+            y1 = Moblist[i].ypos // 32 + 1
             if (x1, y1) == (x, y):
                 Moblist.remove(Moblist[i])
                 return
     if type == 2:
         for i in range(len(Itemlist)):
             x1 = Itemlist[i].xpos // 32
-            y1 = Itemlist[i].ypos // 32
+            y1 = Itemlist[i].ypos // 32 + 1
             if (x1, y1) == (x, y):
                 Itemlist.remove(Itemlist[i])
                 return

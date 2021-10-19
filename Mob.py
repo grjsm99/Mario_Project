@@ -8,7 +8,7 @@ class Mob(Gravity):
         self.height = 32
         if self.type == 1 : self.height += 18
         self.xpos = x * 32
-        self.ypos = y * 32
+        self.ypos = y * 32 - 32
 
         self.left = self.xpos
         self.right = self.xpos + self.width
@@ -21,6 +21,7 @@ class Mob(Gravity):
         self.flip = False
         self.camPos = 0
         self.motion = 0
+    
     def motionUpdate(self, tileset):
         if self.xsp < 0:
             self.flip = False

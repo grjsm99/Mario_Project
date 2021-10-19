@@ -88,6 +88,10 @@ def handle_events():
                 chr.jump(8.3)
             if event.key == SDLK_a:
                 chr.eat_Mushroom()  
+            if event.key == SDLK_b:
+                chr.rtxy()
+                for i in range(len(Moblist_)):
+                    Moblist_[i].rtxy()
         if event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT:
                 isRight = False   
@@ -113,10 +117,11 @@ def draw():
     if chr.isMushAni == True:
         chr.mush_Ani()
 
-    else:    
+    else: 
         chr.motionUpdate(Tilelist)
         for i in range(len(Moblist_)):
             Moblist_[i].motionUpdate(Tilelist)
+        chr.CollideMob(Moblist_)  
     draw_mob()
     chr.draw()
     update_canvas()
@@ -168,7 +173,7 @@ def draw_frac(t):
 def update():
     global camPos
     camPos = chr.rtView()
-    
+
     for i in range(len(Moblist_)):
         Moblist_[i].camPos = camPos
     if isRight == True and isLeft == True:

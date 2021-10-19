@@ -6,7 +6,9 @@ class Gravity:
     width = 0
     height = 0
     yacc = 0
-
+    def rtxy(self):
+        print ('x = ' , self.xpos , ', y = ' , self.ypos)
+        
     def chView(self):
         if(self.xpos > MW // 2):
             self.camPos = self.xpos - MW // 2
