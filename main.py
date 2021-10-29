@@ -85,7 +85,7 @@ def handle_events():
             if event.key == SDLK_DOWN:
                 chr.chuplook(2)
             if event.key == SDLK_SPACE and chr.isjump == False:
-                chr.jump(8.3)
+                chr.jump(8)
             if event.key == SDLK_a:
                 chr.eat_Mushroom()  
             if event.key == SDLK_b:

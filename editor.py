@@ -12,6 +12,9 @@ FILE_NAME = "maptile2.py"
 Load_Tilelist = True  # False = 해당 파일이름으로 새파일 생성, True = 해당 파일이름의 파일 수정
 
 
+
+
+
 open_canvas(MW, MH)
 map_bg = load_image('./img/bg.jpg')
 timg = load_image('./img/block32_pr.png')
