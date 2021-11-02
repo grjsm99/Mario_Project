@@ -2,6 +2,7 @@ from pico2d import *
 from mario import Mario
 from Mob import Mob
 from Framework import *
+import life_state
 from maptile2 import Mapset
 from maptile2 import Moblist
 from frac import Frac
@@ -26,6 +27,7 @@ isLeftMove = None
 mimglist = None
 Tilelist = None
 Moblist_ = None
+
 def init():
 
     global mimglist
@@ -64,11 +66,45 @@ def init():
     isLeft = False
     isLeftMove = False
 
+
+def exit():
+    global mimglist
+    global bimglist
+    global map_bg
+    global fimg
+    global fraclist
+    global camPos
+    global backPos
+    global chr
+    global isRight
+    global isLeft
+    global isLeftMove
+    global Tilelist
+    global Moblist_
+    global running
+    running = False
+    del(mimglist)
+    del(bimglist)
+    del(map_bg)
+    del(fimg)
+    del(fraclist)
+    del(camPos)
+    del(chr)
+    del(isRight)
+    del(isLeft)
+    del(isLeftMove)
+    print(len(Tilelist))
+    Tilelist = None
+    Moblist_ = None
+
+    
+
 def handle_events():
     global running  
     global isRight
     global isLeft
     global isLeftMove
+    global Moblist_
     events = get_events()
     for event in events:
         if event.type == SDL_MOUSEMOTION:
@@ -87,7 +123,9 @@ def handle_events():
             if event.key == SDLK_SPACE and chr.isjump == False:
                 chr.jump(8)
             if event.key == SDLK_a:
-                chr.eat_Mushroom()  
+                #chr.eat_Mushroom()  
+                Moblist_ = None
+                Moblist_ = Moblist
             if event.key == SDLK_b:
                 chr.rtxy()
                 for i in range(len(Moblist_)):
@@ -106,7 +144,7 @@ def handle_events():
             elif event.key == SDLK_RIGHT or event.key == SDLK_LEFT:
                 chr.setfric()
         if event.type == SDL_QUIT:
-            quit()
+           quit()
 
 def draw():
     clear_canvas()
@@ -114,17 +152,12 @@ def draw():
     map_bg.draw(MW // 2 - backPos + MW, MH // 2)
     draw_tileset()
 
-    if chr.isMushAni == True:
-        chr.mush_Ani()
-
-    else: 
-        chr.motionUpdate(Tilelist)
-        for i in range(len(Moblist_)):
-            Moblist_[i].motionUpdate(Tilelist)
-        chr.CollideMob(Moblist_)  
+    
     draw_mob()
     chr.draw()
+
     update_canvas()
+    chr.delayCheck()
 
 def draw_mob():
     for i in range(len(Moblist_)):
@@ -171,6 +204,8 @@ def draw_frac(t):
 
 
 def update():
+    if chr.dead_check() == True:
+        chstate(life_state)
     global camPos
     camPos = chr.rtView()
 
@@ -190,7 +225,15 @@ def update():
     for i in range(len(fraclist)): 
         fraclist[i].upd()
         #chr.xyrun(0,0)
-
+    if chr.isMushAni == True:
+        chr.mush_Ani()
+    elif chr.isDeadAni == True:
+        chr.dead_Ani()
+    else: 
+        chr.motionUpdate(Tilelist)
+        for i in range(len(Moblist_)):
+            Moblist_[i].motionUpdate(Tilelist)
+        chr.CollideMob(Moblist_)  
 
     
 #close_canvas()

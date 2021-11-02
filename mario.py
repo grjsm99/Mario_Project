@@ -24,8 +24,18 @@ class Mario(Gravity):
         self.mushAni = 0
         self.isMushAni = False
         self.mushRate = 0
+        self.isDeadAni = False
+        self.deadDelay = False
+        self.isdead = False
     def chuplook(self, value):  # 위아래 보는상태
         self.uplook = value
+
+    def mobHit(self):
+        self.motion = 6
+        self.ysp = 10
+        self.yacc = -0.3
+        self.isDeadAni = True
+        
 
     def resetMotion(self):
         self.motion = 0
@@ -42,6 +52,7 @@ class Mario(Gravity):
     def eat_Mushroom(self):
         self.isMushAni = True
         self.mushRate = 9
+
     def mush_Ani(self):
         if self.mode == 1:
             self.mode = 0
@@ -56,6 +67,21 @@ class Mario(Gravity):
         self.mushRate -= 1
         if self.mushRate == 0:
             self.isMushAni = False
+
+    def delayCheck(self):
+        if self.deadDelay == False and self.isDeadAni == True:
+            self.deadDelay = True
+            delay(0.7)
+
+    def dead_Ani(self):
+        self.ypos += self.ysp
+        self.ysp += self.yacc
+        if self.ypos < 0:
+            self.isdead = True
+        
+    def dead_check(self):
+        return self.isdead
+
     def xyrun(self, type, speed):
         if type==0: # x
             self.fric = False
@@ -80,14 +106,17 @@ class Mario(Gravity):
         cright = self.xpos + self.width + self.xsp
         cdown = self.ypos
         cup = self.ypos + self.height
-        for i in range(len(moblist)):
-            if self.ysp < 0 and (cleft < moblist[i].xpos + moblist[i].width) and (cright > moblist[i].xpos) and cdown < moblist[i].ypos + moblist[i].height and not cup < moblist[i].ypos + moblist[i].height: # 몹 밟음
-                print(cdown, self.ysp, moblist[i].up, moblist[i].down)
-                self.ysp = 8
-                self.isjump = True
-                print(cleft, cright, moblist[i].left, moblist[i].right)
+        for i in range(len(moblist)-1):
+            if (cleft < moblist[i].xpos + moblist[i].width) and (cright > moblist[i].xpos) and cdown < moblist[i].ypos + moblist[i].height:
+                if self.ysp < 0 and cdown - moblist[i].ypos - moblist[i].height > self.ysp and not cup < moblist[i].ypos + moblist[i].height: # 몹 밟음
+                    print(cdown, self.ysp, moblist[i].up, moblist[i].down)
+                    self.ysp = 8
+                    self.isjump = True
+                    print(cleft, cright, moblist[i].left, moblist[i].right)
 
-                del moblist[i] 
+                    del moblist[i]
+                elif cup > moblist[i].ypos:
+                    self.mobHit()
 
     def motionUpdate(self, tileset):
         
@@ -142,6 +171,7 @@ class Mario(Gravity):
             self.img.clip_draw(self.motion * self.width, 52-self.mode*52, self.width, self.height, self.xpos-self.camPos-self.mode+self.width/2, self.ypos+self.height/2)
         else:
             self.img.clip_composite_draw(self.motion * self.width, 52-self.mode*52, self.width, self.height, 0, 'h', self.xpos-self.camPos+self.width/2, self.ypos+self.height/2, self.width, self.height)
+
 
 
     def ColAct(self, type, t):
