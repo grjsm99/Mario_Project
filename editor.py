@@ -7,7 +7,7 @@ import re
 MW, MH = 1024, 768
 BLOCK_TYPES = 8
 MOB_TYPES = 2
-ITEM_TYPES = 0
+ITEM_TYPES = 3
 FILE_NAME = "maptile2.py"
 Load_Tilelist = True  # False = 해당 파일이름으로 새파일 생성, True = 해당 파일이름의 파일 수정
 
@@ -19,6 +19,7 @@ open_canvas(MW, MH)
 map_bg = load_image('./img/bg.jpg')
 timg = load_image('./img/block32_pr.png')
 mimg = load_image('./img/mob32.png')
+iimg = load_image('./img/item32.png')
 bimglist = []
 mimglist = []
 iimglist = []

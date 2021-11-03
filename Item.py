@@ -1,3 +1,41 @@
+from pico2d import *
+from Gravity import *
 
-class Item:
-    pass
+class Item(Gravity):
+    def __init__(self, x, y, types):
+        self.xpos = x * 32
+        self.ypos = y * 32 + 32
+        self.ysp = 0
+        self.xsp = -1
+        self.yacc = 0
+        self.type = types # 0 = 동전, 1 = 버섯, 2 = 꽃
+
+    def motionUpdate(self, tileset):
+        if self.xsp < 0:
+            self.flip = False
+        if self.xsp > 0:
+            self.flip = True
+        self.yacc-=0.03
+        if self.ysp > -10:
+            self.ysp += self.yacc   
+
+        self.Collide(tileset)
+        self.frame+=1
+        if self.xsp != 0 and self.ysp == 0 and self.frame%5==0: # 걷는모션
+            if(self.motion == 0): self.motion = 1
+            elif(self.motion == 1): self.motion = 0
+            self.frame=0
+        self.xpos += self.xsp
+        self.ypos += self.ysp
+        
+    def ColAct(self, type, t):
+        if type == 0: # 착지
+            self.ypos = t.hbup
+            self.yacc = 0
+            self.ysp = 0
+        elif type == 2: # 왼쪽
+            self.xpos = t.hbleft - self.width
+            self.xsp *= -1
+        elif type == 3: # 오른쪽
+            self.xpos = t.hbright
+            self.xsp *= -1

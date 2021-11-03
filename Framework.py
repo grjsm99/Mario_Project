@@ -2,16 +2,18 @@ from pico2d import delay
 running = None
 temp = None
 runningState = None
-def run(state):
+selectStage = 0
+
+def run(state = None):
     global runningState
     global running
     running = True
     runningState = state
-    state.init()
+    runningState.init()
     while(running):
-        state.handle_events()
-        state.update()
-        state.draw()
+        runningState.handle_events()
+        runningState.update()
+        runningState.draw()
         delay(0.01)
     
 def chstate(tar):
@@ -19,8 +21,9 @@ def chstate(tar):
     global runningState
 
     runningState.exit()
-    if runningState != None:
-        runningState.init()
+    runningState = tar
+    tar.init()
+    run(tar)
 
 
 

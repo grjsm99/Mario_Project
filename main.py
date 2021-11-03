@@ -7,6 +7,7 @@ from maptile2 import Mapset
 from maptile2 import Moblist
 from frac import Frac
 import math
+import copy
 
 
 BLOCK_TYPES = 8
@@ -29,7 +30,7 @@ Tilelist = None
 Moblist_ = None
 
 def init():
-
+    print("Init")
     global mimglist
     global bimglist
     global map_bg
@@ -44,8 +45,8 @@ def init():
     global isLeftMove
     global Tilelist
     global Moblist_
-    Tilelist = Mapset
-    Moblist_ = Moblist
+    Tilelist = copy.deepcopy(Mapset)
+    Moblist_ = copy.deepcopy(Moblist)
     map_bg = load_image('./img/bg.jpg')
     fimg = load_image('./img/frac.png')
     bimglist = []
@@ -93,7 +94,6 @@ def exit():
     del(isRight)
     del(isLeft)
     del(isLeftMove)
-    print(len(Tilelist))
     Tilelist = None
     Moblist_ = None
 
@@ -124,8 +124,7 @@ def handle_events():
                 chr.jump(8)
             if event.key == SDLK_a:
                 #chr.eat_Mushroom()  
-                Moblist_ = None
-                Moblist_ = Moblist
+                pass
             if event.key == SDLK_b:
                 chr.rtxy()
                 for i in range(len(Moblist_)):
@@ -205,6 +204,7 @@ def draw_frac(t):
 
 def update():
     if chr.dead_check() == True:
+        print("!")
         chstate(life_state)
     global camPos
     camPos = chr.rtView()
@@ -219,6 +219,7 @@ def update():
         chr.xyrun(0, -3)
     else:
         chr.xyrun(0,0)
+
     backPos = camPos
     backPos %= MW
 
