@@ -1,5 +1,6 @@
 from pico2d import *
 from Gravity import *
+
 MW, MH = 1024, 768
 
 class Mario(Gravity):
@@ -21,20 +22,35 @@ class Mario(Gravity):
         self.camPos = 0
         self.uplook = 0
         self.aning = False
-        self.mushAni = 0
+
         self.isMushAni = False
+        self.isFireAni = False
         self.mushRate = 0
+        self.fireRate = 0
+
         self.isDeadAni = False
         self.deadDelay = False
         self.isdead = False
+        self.inviscount = 0
+        self.itmpdata = None
+
     def chuplook(self, value):  # 위아래 보는상태
         self.uplook = value
 
     def mobHit(self):
-        self.motion = 6
-        self.ysp = 10
-        self.yacc = -0.3
-        self.isDeadAni = True
+        if(self.mode == 2): # 불쏘는 상태일때
+            self.isFireAni = True
+            self.fireRate = 9
+            self.inviscount = 100
+        elif(self.mode == 1):
+            self.isMushAni = True
+            self.mushRate = 9
+            self.inviscount = 100
+        else:
+            self.motion = 6
+            self.ysp = 10
+            self.yacc = -0.3
+            self.isDeadAni = True
         
 
     def resetMotion(self):
@@ -50,9 +66,15 @@ class Mario(Gravity):
         self.ysp = power
 
     def eat_Mushroom(self):
-        self.isMushAni = True
-        self.mushRate = 9
-
+        if self.mode == 0:
+            self.isMushAni = True
+            self.mushRate = 9
+    
+    def eat_Flower(self):
+        if self.mode == 1:
+            self.isFireAni = True
+            self.fireRate = 9
+            
     def mush_Ani(self):
         if self.mode == 1:
             self.mode = 0
@@ -67,6 +89,17 @@ class Mario(Gravity):
         self.mushRate -= 1
         if self.mushRate == 0:
             self.isMushAni = False
+
+    def fire_Ani(self):
+        if self.mode == 2:
+            self.mode = 1
+            delay(0.05)
+        elif self.mode == 1:
+            self.mode = 2
+            delay(0.05)
+        self.fireRate -= 1
+        if self.fireRate == 0:
+            self.isFireAni = False
 
     def delayCheck(self):
         if self.deadDelay == False and self.isDeadAni == True:
@@ -106,20 +139,42 @@ class Mario(Gravity):
         cright = self.xpos + self.width + self.xsp
         cdown = self.ypos
         cup = self.ypos + self.height
-        for i in range(len(moblist)-1):
-            if (cleft < moblist[i].xpos + moblist[i].width) and (cright > moblist[i].xpos) and cdown < moblist[i].ypos + moblist[i].height:
+        for i in range(len(moblist)):
+            if (cleft < moblist[i].xpos + moblist[i].width) and (cright > moblist[i].xpos) and (cdown < moblist[i].ypos + moblist[i].height) and (self.inviscount == 0):
                 if self.ysp < 0 and cdown - moblist[i].ypos - moblist[i].height > self.ysp and not cup < moblist[i].ypos + moblist[i].height: # 몹 밟음
-                    print(cdown, self.ysp, moblist[i].up, moblist[i].down)
                     self.ysp = 8
                     self.isjump = True
-                    print(cleft, cright, moblist[i].left, moblist[i].right)
-
                     del moblist[i]
+                    return 0
                 elif cup > moblist[i].ypos:
-                    self.mobHit()
+                    self.mobHit() # 몹에 닿음
+                    return 1
+    def CollideItem(self, Itemlist):
+        cleft = self.xpos + self.xsp
+        cright = self.xpos + self.width + self.xsp
+        cdown = self.ypos
+        cup = self.ypos + self.height
+
+        for i in range(len(Itemlist)):
+            if (cleft < Itemlist[i].xpos + Itemlist[i].width) and (cright > Itemlist[i].xpos) and (cdown < Itemlist[i].ypos + Itemlist[i].height) and (cup > Itemlist[i].ypos):
+                tmp = Itemlist[i].type
+                del Itemlist[i]
+                return tmp + 1
+        return 0
 
     def motionUpdate(self, tileset):
-        
+        if self.inviscount > 0:
+            self.inviscount -= 1 # 무적시간 카운트 줄임
+
+        if(self.inviscount == 0):
+            self.img.opacify(1) # 무적시간 아닐때 선명하게 보이기
+
+        else:   
+            if self.inviscount % 2 == 0:
+                self.img.opacify(20) # 몹 닿았을때 흐릿하게 보이기
+            else:
+                self.img.opacify(120) # 몹 닿았을때 흐릿하게 보이기
+
         if self.fric == True:   # x방향 멈출시 마찰력
             self.xsp *= 0.8
             if (self.xsp < 0.1 and self.xsp > 0) or (self.xsp > -0.1 and self.xsp < 0):
@@ -165,14 +220,14 @@ class Mario(Gravity):
                 self.motion = 5
 
     def draw(self):
-        
-        draw_rectangle(self.xpos - self.camPos, self.ypos , self.xpos + self.width- self.camPos , self.ypos + self.height)
+        #draw_rectangle(self.xpos - self.camPos, self.ypos , self.xpos + self.width- self.camPos , self.ypos + self.height)
         if self.flip == False:
-            self.img.clip_draw(self.motion * self.width, 52-self.mode*52, self.width, self.height, self.xpos-self.camPos-self.mode+self.width/2, self.ypos+self.height/2)
+            self.img.clip_draw(self.motion * self.width, 104-self.mode*52, self.width, self.height, self.xpos-self.camPos-self.mode+self.width/2, self.ypos+self.height/2)
         else:
-            self.img.clip_composite_draw(self.motion * self.width, 52-self.mode*52, self.width, self.height, 0, 'h', self.xpos-self.camPos+self.width/2, self.ypos+self.height/2, self.width, self.height)
+            self.img.clip_composite_draw(self.motion * self.width, 104-self.mode*52, self.width, self.height, 0, 'h', self.xpos-self.camPos+self.width/2, self.ypos+self.height/2, self.width, self.height)
 
-
+    def popItems(self):
+        return self.itmpdata
 
     def ColAct(self, type, t):
         if type == 0: # 착지
@@ -190,6 +245,7 @@ class Mario(Gravity):
                 t.sptype = 4
                 t.isAni = False
                 t.frame = 0
+                self.itmpdata = (t.x, t.y + 1, self.mode)
             if t.sptype == 3: # 돌아가는 블록 부딪힘
                 t.isAni = True
                 t.ishbox = False

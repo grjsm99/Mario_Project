@@ -3,7 +3,7 @@ running = None
 temp = None
 runningState = None
 selectStage = 0
-
+life = 9
 def run(state = None):
     global runningState
     global running
@@ -19,11 +19,12 @@ def run(state = None):
 def chstate(tar):
     global running
     global runningState
+    print(runningState , " - > " , tar , " , ")
 
     runningState.exit()
     runningState = tar
     tar.init()
-    run(tar)
+
 
 
 

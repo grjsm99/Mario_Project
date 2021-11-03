@@ -7,7 +7,7 @@ import re
 MW, MH = 1024, 768
 BLOCK_TYPES = 8
 MOB_TYPES = 2
-ITEM_TYPES = 3
+ITEM_TYPES = 4
 FILE_NAME = "maptile2.py"
 Load_Tilelist = True  # False = 해당 파일이름으로 새파일 생성, True = 해당 파일이름의 파일 수정
 
@@ -59,6 +59,7 @@ if Load_Tilelist == True:
         vars = re.findall(r'\d+', line)
         if mode == 0: Tilelist.append(Block(int(vars[0]), int(vars[1]), int(vars[2])))
         if mode == 1: Moblist.append(Mob(int(vars[0]), int(vars[1]), int(vars[2])))
+        if mode == 2: Itemlist.append(Item(int(vars[0]), int(vars[1]), int(vars[2])))
 def handle_events():
     global running
     global camPos
@@ -76,6 +77,7 @@ def handle_events():
                 addBlock((event.x + camPos) // 32, ((MH - event.y) // 32 + 1), num, Selectmode)
             if dragMode == 2:
                 checkExist((event.x + camPos) // 32, ((MH - event.y) // 32 + 1), Selectmode)
+            
         if event.type == SDL_MOUSEBUTTONDOWN:
             if event.button == SDL_BUTTON_LEFT:
                 if blockSelect == True:
@@ -92,7 +94,7 @@ def handle_events():
                         Selectmode = 1
                         return
                 elif ItemSelect == True:
-                    if event.y > 0 and event.y < 50 and event.x < 32 * ITEM_TYPES:
+                    if event.y > 0 and event.y < 32 and event.x < 32 * ITEM_TYPES:
                         num = event.x // 32
                         ItemSelect = False
                         Selectmode = 2
@@ -135,6 +137,10 @@ def handle_events():
                 for i in range(len(Moblist)):
                     f.write("Mob(%d, %d, %d),\n" % (Moblist[i].left // 32 , Moblist[i].up // 32, Moblist[i].type))
                 f.write("]\n")
+                f.write("Itemlist = [\n")
+                for i in range(len(Itemlist)):
+                    f.write("Item(%d, %d, %d),\n" % (Itemlist[i].left // 32 , Itemlist[i].up // 32, Itemlist[i].type))
+                f.write("]\n")
                 f.close()
         if event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT or event.key == SDLK_LEFT:
@@ -146,14 +152,19 @@ def draw_tileset(typ):
     global camPos
     for i in range(len(Tilelist)):
         if Tilelist[i].hbright - camPos >= 0 and Tilelist[i].hbleft - camPos <= MW:
-            bimglist[Tilelist[i].sptype].clip_draw(Tilelist[i].frame * 32, 0, 32, 32, Tilelist[i].hbleft + 16 - camPos, Tilelist[i].hbdown + 16)
+            bimglist[Tilelist[i].sptype].clip_draw(0, 0, 32, 32, Tilelist[i].hbleft + 16 - camPos, Tilelist[i].hbdown + 16)
     for i in range(len(Moblist)):
         if Moblist[i].right - camPos >= 0 and Moblist[i].left - camPos <= MW:
-            mimglist[Moblist[i].type].clip_draw(Moblist[i].frame * 32, 0, 32, Moblist[i].height, Moblist[i].xpos + 16 - camPos, Moblist[i].ypos + Moblist[i].height / 2)
+            mimglist[Moblist[i].type].clip_draw(0, 0, 32, Moblist[i].height, Moblist[i].xpos + 16 - camPos, Moblist[i].ypos + Moblist[i].height / 2)
+    for i in range(len(Itemlist)):
+        if Itemlist[i].right - camPos >= 0 and Itemlist[i].left - camPos <= MW:
+            iimglist[Itemlist[i].type].clip_draw(0, 0, 32, Itemlist[i].height, Itemlist[i].xpos + 16 - camPos, Itemlist[i].ypos + Itemlist[i].height / 2)
     if blockSelect == True:
         timg.draw_to_origin(0, MH - 32)
     if MobSelect == True:
         mimg.draw_to_origin(0, MH - 50)
+    if ItemSelect == True:
+        iimg.draw_to_origin(0, MH - 32)
 
 def checkExist(x, y, type):
     global Tilelist
@@ -186,9 +197,10 @@ def addBlock(x, y, bMode, type): # 0 = 블럭, 1 = 몹, 2 = 아이템
     global blockMode
     global itemMode
     checkExist(x,y, type)
+    print(x, y, len(Itemlist))
     if(type == 0): Tilelist.append(Block(x, y, bMode))
     if(type == 1): Moblist.append(Mob(x, y, bMode))
-    if(type == 2): Itemlist.append(Block(x, y, bMode))
+    if(type == 2): Itemlist.append(Item(x, y, bMode))
 
 while(running):
     if camMove == 1:

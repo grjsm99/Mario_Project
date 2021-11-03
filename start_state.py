@@ -10,6 +10,7 @@ def init():
     img = load_image('./img/start_img.png')
 
 def exit():
+    print("start exit")
     global img
     del(img)
     

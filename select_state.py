@@ -10,6 +10,7 @@ def init():
     img = load_image('./img/lvselect.png')
 
 def exit():
+    print("select exit")
     global img
     del(img)
     
