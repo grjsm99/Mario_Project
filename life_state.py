@@ -5,7 +5,7 @@ import main
 img = None
 num_img = None
 logo_time = None
-
+stage = 1
 def init():
     global img
     global num_img

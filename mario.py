@@ -1,6 +1,6 @@
 from pico2d import *
 from Gravity import *
-
+from fire import Fire
 MW, MH = 1024, 768
 
 class Mario(Gravity):
@@ -22,7 +22,7 @@ class Mario(Gravity):
         self.camPos = 0
         self.uplook = 0
         self.aning = False
-
+        self.firelist = []
         self.isMushAni = False
         self.isFireAni = False
         self.mushRate = 0
@@ -52,6 +52,12 @@ class Mario(Gravity):
             self.yacc = -0.3
             self.isDeadAni = True
         
+    def launchFb(self):
+        if(self.mode == 2):
+            self.firelist.append(Fire(self.xpos, self.ypos, self.flip))
+    
+    def drFb(self):
+        return self.firelist
 
     def resetMotion(self):
         self.motion = 0

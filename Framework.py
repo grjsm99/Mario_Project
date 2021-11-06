@@ -2,7 +2,7 @@ from pico2d import delay
 running = None
 temp = None
 runningState = None
-selectStage = 0
+selectStage = 1
 life = 9
 def run(state = None):
     global runningState

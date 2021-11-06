@@ -3,9 +3,7 @@ from mario import Mario
 from Mob import Mob
 import Framework
 import life_state
-from maptile2 import Mapset
-from maptile2 import Moblist
-from maptile2 import Itemlist
+
 from frac import Frac
 from Item import Item
 import math
@@ -23,6 +21,7 @@ iimglist = None
 Tilelist = None
 map_bg = None
 fimg = None
+fbimg = None
 camPos = None
 backPos = None
 fraclist = None
@@ -35,16 +34,24 @@ Itemlist_ = None
 Moblist_ = None
 itmpdata = None
 def init():
+    if(Framework.selectStage == 0):
+        from maptile1 import Mapset
+        from maptile1 import Moblist
+        from maptile1 import Itemlist
+    if(Framework.selectStage == 1):
+        from maptile2 import Mapset
+        from maptile2 import Moblist
+        from maptile2 import Itemlist
     print("Init")
     global mimglist
     global bimglist
     global map_bg
     global fimg
+    global fbimg
     global fraclist
     global camPos
     global backPos
     global chr
-    global running
     global isRight
     global isLeft
     global isLeftMove
@@ -57,6 +64,7 @@ def init():
     Itemlist_ = copy.deepcopy(Itemlist)
     map_bg = load_image('./img/bg.jpg')
     fimg = load_image('./img/frac.png')
+    fbimg = load_image('./img/fireball.png')
     bimglist = []
     fraclist = []
     mimglist = []
@@ -92,6 +100,7 @@ def exit():
     global Tilelist
     global Moblist_
     global Itemlist_
+    global fbimg
 
     del(mimglist)
     del(bimglist)
@@ -103,6 +112,7 @@ def exit():
     del(isRight)
     del(isLeft)
     del(isLeftMove)
+    del(fbimg)
     Tilelist = None
     Moblist_ = None
     Itemlist_ = None
@@ -133,7 +143,8 @@ def handle_events():
             if event.key == SDLK_SPACE and chr.isjump == False:
                 chr.jump(8)
             if event.key == SDLK_a:
-                #chr.eat_Mushroom()  
+                #chr.eat_Mushroom()
+                chr.launchFb()
                 pass
             if event.key == SDLK_b:
                 chr.rtxy()
@@ -163,6 +174,7 @@ def draw():
 
     draw_mob()
     draw_item()
+    draw_fb()
     chr.draw()
 
     update_canvas()
@@ -217,6 +229,13 @@ def draw_frac(t):
     fraclist.append(Frac(cx, cy, 2, 1))
     fraclist.append(Frac(cx, cy, 2, 2))
 
+def draw_fb():
+    global fbimg
+
+    fblist = chr.drFb()
+    for i in range(len(fblist)):
+        fbimg.draw(fblist[i].xpos- camPos, fblist[i].ypos)
+
 
 def update():
     if chr.dead_check() == True:
@@ -255,6 +274,15 @@ def update():
 
         for i in range(len(Itemlist_)):
             Itemlist_[i].motionUpdate(Tilelist) # 아이템 업데이트
+
+        for i in range(len(chr.firelist)):
+            chr.firelist[i].motionUpdate(Tilelist) # 불 업데이트
+            chr.firelist[i].CollideMob(Moblist_) # 불 몹충돌
+            
+        for i in range(len(chr.firelist)): 
+            if(chr.firelist[i].dl == True):
+                del(chr.firelist[i])
+                return
 
         chr.CollideMob(Moblist_) # 몹충돌 검사
         result = chr.CollideItem(Itemlist_)  # 아이템 충돌 검사

@@ -8,7 +8,7 @@ MW, MH = 1024, 768
 BLOCK_TYPES = 8
 MOB_TYPES = 2
 ITEM_TYPES = 4
-FILE_NAME = "maptile2.py"
+FILE_NAME = "maptile1.py"
 Load_Tilelist = True  # False = 해당 파일이름으로 새파일 생성, True = 해당 파일이름의 파일 수정
 
 
