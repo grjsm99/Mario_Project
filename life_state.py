@@ -11,8 +11,13 @@ def init():
     global num_img
     global logo_time
     logo_time = 0
-    img = load_image('./img/life_s.png')
     num_img = load_image('./img/num.png')
+    if Framework.life>0:
+
+        img = load_image('./img/life_s.png')
+    else:
+        img = load_image('./img/gover.png')
+
     Framework.life -= 1
 
 def exit():
@@ -34,8 +39,12 @@ def draw():
 def update():
     global logo_time
     if (logo_time > 1.0):
-        logo_time = 0        
-        Framework.chstate(main)
+        if Framework.life>0:
+            logo_time = 0        
+            Framework.chstate(main)
+        else:
+            quit()
+        
     delay(0.01)
     logo_time += 0.01
 
