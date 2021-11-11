@@ -286,10 +286,8 @@ def update():
 
         chr.CollideMob(Moblist_) # 몹충돌 검사
         result = chr.CollideItem(Itemlist_)  # 아이템 충돌 검사
-        if(result==2): # 버섯 먹었을때
-            chr.eat_Mushroom()
-        if(result==3): # 꽃 먹었을때
-            chr.eat_Flower()
+        if(result!=0):
+            chr.eat_Item(result)
         hitItem = chr.popItems()
         if(hitItem != None):
             if hitItem[2] == 0:

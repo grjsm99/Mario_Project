@@ -1,6 +1,7 @@
 from pico2d import *
 from Gravity import *
 from fire import Fire
+from Framework import life
 MW, MH = 1024, 768
 
 class Mario(Gravity):
@@ -71,15 +72,22 @@ class Mario(Gravity):
         self.isjump = True
         self.ysp = power
 
-    def eat_Mushroom(self):
-        if self.mode == 0:
-            self.isMushAni = True
-            self.mushRate = 9
-    
-    def eat_Flower(self):
-        if self.mode == 1:
-            self.isFireAni = True
-            self.fireRate = 9
+    def eat_Item(self, type):
+        global life
+        print(type)
+        if(type == 2): # 버섯
+            if self.mode == 0:
+                self.isMushAni = True
+                self.mushRate = 9
+        if(type == 3): # 꽃
+            if self.mode == 1:
+                self.isFireAni = True
+                self.fireRate = 9
+        if(type == 4): # 1UP
+            life+=1
+        if(type == 1): # 동전
+            pass
+
             
     def mush_Ani(self):
         if self.mode == 1:
