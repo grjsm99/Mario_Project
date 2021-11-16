@@ -44,13 +44,14 @@ class Mario(Gravity):
         if(self.mode == 2): # 불쏘는 상태일때
             self.isFireAni = True
             self.fireRate = 0
-            self.inviscount = 100
+            self.inviscount = 1000
         elif(self.mode == 1):
             self.isMushAni = True
             self.mushRate = 0
-            self.inviscount = 100
+            self.inviscount = 1000
         else:
             self.motion = 6
+
             self.ysp = 8 * Framework.runtime
             self.yacc = -0.16 * (Framework.runtime ** 2)
             self.isDeadAni = True
@@ -82,7 +83,6 @@ class Mario(Gravity):
                 self.isMushAni = True
                 self.mushRate = 0
         if(type == 3): # 꽃
-            if self.mode == 1:
                 self.isFireAni = True
                 self.fireRate = 0
         if(type == 4): # 1UP
@@ -114,7 +114,7 @@ class Mario(Gravity):
         if self.fireRate > 5:
             if self.mode == 2:
                 self.mode = 1
-            elif self.mode == 1:
+            else:
                 self.mode = 2
             self.fireRate = 0
             self.frrate += 1
@@ -129,6 +129,8 @@ class Mario(Gravity):
             delay(0.7)
 
     def dead_Ani(self):
+        if self.yacc > 0.05:
+            self.yacc = 0.05
         self.ypos += self.ysp 
         self.ysp += self.yacc
         if self.ypos < 0:
@@ -162,13 +164,15 @@ class Mario(Gravity):
         cdown = self.ypos
         cup = self.ypos + self.height
         for i in range(len(moblist)):
-            if (cleft < moblist[i].xpos + moblist[i].width) and (cright > moblist[i].xpos) and (cdown < moblist[i].ypos + moblist[i].height) and (self.inviscount == 0):
+            if (cleft < moblist[i].xpos + moblist[i].width) and (cright > moblist[i].xpos) and (cdown < moblist[i].ypos + moblist[i].height):
                 if self.ysp < 0 and cdown - moblist[i].ypos - moblist[i].height > self.ysp and not cup < moblist[i].ypos + moblist[i].height: # 몹 밟음
-                    self.ysp = 8
-                    self.isjump = True
+                    self.yacc = 0
+                    self.jump(6)
+                    self.inviscount = 200
                     del moblist[i]
                     return 0
-                elif cup > moblist[i].ypos:
+                elif cup > moblist[i].ypos and (self.inviscount == 0):
+                    self.yacc = 0
                     self.mobHit() # 몹에 닿음
                     return 1
     def CollideItem(self, Itemlist):
@@ -185,9 +189,12 @@ class Mario(Gravity):
         return 0
 
     def motionUpdate(self, tileset):
+        if self.ypos < 0:
+            self.isdead = True
         if self.inviscount > 0:
-            self.inviscount -= 1 # 무적시간 카운트 줄임
-
+            self.inviscount -= 1000 * Framework.frame_time # 무적시간 카운트 줄임
+        if self.inviscount < 0:
+            self.inviscount = 0
         if(self.inviscount == 0):
             self.img.opacify(1) # 무적시간 아닐때 선명하게 보이기
 
@@ -211,7 +218,7 @@ class Mario(Gravity):
         if self.xsp > 0:
             self.flip = True
         self.yacc-=0.04 * Framework.runtime
-        if self.ysp > -20 * Framework.runtime:
+        if self.ysp > -20:
             self.ysp += self.yacc * Framework.runtime
 
         self.Collide(tileset)
@@ -251,6 +258,7 @@ class Mario(Gravity):
         return self.itmpdata
 
     def ColAct(self, type, t):
+        print(type)
         if type == 0: # 착지
             if(self.ypos!=t.hbup): self.motion = 0
             self.ypos = t.hbup

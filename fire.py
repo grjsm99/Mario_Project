@@ -30,8 +30,8 @@ class Fire(Gravity):
 
     def motionUpdate(self, tileset):
         self.timer -= 1 * Framework.runtime
-        self.yacc-=0.04 * Framework.runtime
-        if self.ysp > -20 * Framework.runtime:
+        self.yacc -= 0.04 * Framework.runtime
+        if self.ysp > -20:
             self.ysp += self.yacc * Framework.runtime
 
         self.Collide(tileset)

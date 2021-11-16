@@ -12,14 +12,12 @@ FILE_NAME = "maptile1.py"
 Load_Tilelist = True  # False = 해당 파일이름으로 새파일 생성, True = 해당 파일이름의 파일 수정
 
 
-
-
-
 open_canvas(MW, MH)
 map_bg = load_image('./img/bg.jpg')
 timg = load_image('./img/block32_pr.png')
 mimg = load_image('./img/mob32.png')
 iimg = load_image('./img/item32.png')
+gimg = load_image('./img/goal.png')
 bimglist = []
 mimglist = []
 iimglist = []
@@ -39,9 +37,12 @@ Selectmode = 0 # 0 = 블럭, 1 = 몹, 2 = 아이템
 blockSelect = False
 MobSelect = False
 ItemSelect = False
+goalMode = False
 num = 0
 camMove = 0
 dragMode = 0
+goalx = 0
+goaly = 0
 
 if Load_Tilelist == True:
     fr = open(FILE_NAME , 'r')
@@ -55,6 +56,11 @@ if Load_Tilelist == True:
         if line[0] == ']':
             mode += 1
             line = fr.readline()
+            if line[0] == 'g':
+                vars = re.findall(r'\d+', line)
+                goalx = int(vars[0]) 
+                goaly = int(vars[1])
+                break
             line = fr.readline()
         vars = re.findall(r'\d+', line)
         if mode == 0: Tilelist.append(Block(int(vars[0]), int(vars[1]), int(vars[2])))
@@ -70,6 +76,9 @@ def handle_events():
     global MobSelect
     global blockSelect
     global num
+    global goalx
+    global goaly
+    global goalMode
     events = get_events()
     for event in events:
         if event.type == SDL_MOUSEMOTION:
@@ -80,6 +89,11 @@ def handle_events():
             
         if event.type == SDL_MOUSEBUTTONDOWN:
             if event.button == SDL_BUTTON_LEFT:
+                if goalMode == True:
+                    goalx = (event.x + camPos) // 32
+                    goaly = (MH - event.y) // 32 + 1
+                    goalMode = False
+                    return
                 if blockSelect == True:
                     #print(event.x, event.y)
                     if event.y > 0 and event.y < 32 and event.x < 32 * BLOCK_TYPES:
@@ -123,6 +137,11 @@ def handle_events():
                 ItemSelect = True
                 blockSelect = False
                 MobSelect = False
+            if event.key == SDLK_4:
+                goalMode = True
+                blockSelect = False
+                MobSelect = False
+                ItemSelect = False
             if event.key == SDLK_s:
                 Tilelist.sort(key=lambda c: c.x)
                 f = open(FILE_NAME, 'w')
@@ -141,6 +160,7 @@ def handle_events():
                 for i in range(len(Itemlist)):
                     f.write("Item(%d, %d, %d),\n" % (Itemlist[i].left // 32 , Itemlist[i].up // 32, Itemlist[i].type))
                 f.write("]\n")
+                f.write("goal = (%d, %d)" % (goalx, goaly))
                 f.close()
         if event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT or event.key == SDLK_LEFT:
@@ -150,6 +170,9 @@ def handle_events():
 
 def draw_tileset(typ):
     global camPos
+    global goalx
+    global goaly
+
     for i in range(len(Tilelist)):
         if Tilelist[i].hbright - camPos >= 0 and Tilelist[i].hbleft - camPos <= MW:
             bimglist[Tilelist[i].sptype].clip_draw(0, 0, 32, 32, Tilelist[i].hbleft + 16 - camPos, Tilelist[i].hbdown + 16)
@@ -159,6 +182,8 @@ def draw_tileset(typ):
     for i in range(len(Itemlist)):
         if Itemlist[i].right - camPos >= 0 and Itemlist[i].left - camPos <= MW:
             iimglist[Itemlist[i].type].clip_draw(0, 0, 32, Itemlist[i].height, Itemlist[i].xpos + 16 - camPos, Itemlist[i].ypos + Itemlist[i].height / 2)
+    if goalx != 0 or goaly != 0:
+        gimg.draw_to_origin(goalx * 32 - camPos, goaly * 32 - 32)
     if blockSelect == True:
         timg.draw_to_origin(0, MH - 32)
     if MobSelect == True:

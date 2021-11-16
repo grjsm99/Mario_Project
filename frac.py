@@ -10,7 +10,7 @@ class Frac:
     def upd(self):
         self.x += self.xsp
         self.y += self.ysp
-        self.ysp -= Framework.runtime
+        self.ysp -= (Framework.runtime ** 2)
     def rtxy(self):
         return self.x, self.y
 

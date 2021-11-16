@@ -31,13 +31,13 @@ def run(state = None):
         runningState.handle_events()
         runningState.update()
         runningState.draw()
-        delay(0.01)
+        #delay(0.01)
         frame_time = time.time() - current_time
         frame_rate = 1.0 / frame_time
         current_time += frame_time
         if(frame_time>0.03): frame_time = 0.03
         runtime = frame_time * RUN_SPEED_PPS
-        print("Frame Time: %f sec, Frame Rate: %f fps" %(frame_time,frame_rate))
+        #print("Frame Time: %f sec, Frame Rate: %f fps" %(frame_time,frame_rate))
 
     
 def chstate(tar):

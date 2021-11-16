@@ -3,6 +3,7 @@ from mario import Mario
 from Mob import Mob
 import Framework
 import life_state
+import select_state
 
 from frac import Frac
 from Item import Item
@@ -22,6 +23,7 @@ Tilelist = None
 map_bg = None
 fimg = None
 fbimg = None
+gimg = None
 camPos = None
 backPos = None
 fraclist = None
@@ -33,15 +35,18 @@ Tilelist = None
 Itemlist_ = None
 Moblist_ = None
 itmpdata = None
+goalp = ( 1024, 0 )
 def init():
     if(Framework.selectStage == 0):
         from maptile1 import Mapset
         from maptile1 import Moblist
         from maptile1 import Itemlist
+        from maptile1 import goal
     if(Framework.selectStage == 1):
         from maptile2 import Mapset
         from maptile2 import Moblist
         from maptile2 import Itemlist
+        from maptile2 import goal
     print("Init")
     global mimglist
     global bimglist
@@ -59,12 +64,15 @@ def init():
     global Moblist_
     global Itemlist_
     global iimglist
+    global goalp
+    global gimg
     Tilelist = copy.deepcopy(Mapset)
     Moblist_ = copy.deepcopy(Moblist)
     Itemlist_ = copy.deepcopy(Itemlist)
     map_bg = load_image('./img/bg.jpg')
     fimg = load_image('./img/frac.png')
     fbimg = load_image('./img/fireball.png')
+    gimg = load_image('./img/goal.png')
     bimglist = []
     fraclist = []
     mimglist = []
@@ -78,6 +86,7 @@ def init():
     camPos = 0
     backPos = 0
 
+    goalp = goal
     chr = Mario()
     isRight = False
     isLeft = False
@@ -101,7 +110,7 @@ def exit():
     global Moblist_
     global Itemlist_
     global fbimg
-
+    global goalp
     del(mimglist)
     del(bimglist)
     del(map_bg)
@@ -113,6 +122,7 @@ def exit():
     del(isLeft)
     del(isLeftMove)
     del(fbimg)
+    del(goalp)
     Tilelist = None
     Moblist_ = None
     Itemlist_ = None
@@ -141,7 +151,7 @@ def handle_events():
             if event.key == SDLK_DOWN:
                 chr.chuplook(2)
             if event.key == SDLK_SPACE and chr.isjump == False:
-                chr.jump(8)
+                chr.jump(10)
             if event.key == SDLK_a:
                 #chr.eat_Mushroom()
                 chr.launchFb()
@@ -177,6 +187,7 @@ def draw():
     draw_fb()
     chr.draw()
 
+    gimg.draw_to_origin(goalp[0] * 32 - camPos, goalp[1] * 32 - 32)
     update_canvas()
     chr.delayCheck()
 
@@ -239,6 +250,7 @@ def draw_fb():
 
 def update():
     if chr.dead_check() == True:
+        life_state.state_type = 0
         Framework.chstate(life_state)
         return
     global camPos
@@ -254,6 +266,13 @@ def update():
         chr.xyrun(0, -3)
     else:
         chr.xyrun(0,0)
+
+    if chr.xpos + chr.width > goalp[0] * 32 and chr.xpos < goalp[0] * 32 + 47 and chr.ypos + chr.height > goalp[1] * 32 + 64 and chr.ypos < goalp[1] * 32 + 64 and chr.isDeadAni == False:
+        print(chr.xpos , goalp[0] * 32)
+        life_state.state_type = 1
+        Framework.chstate(life_state)
+        
+        return 
 
     backPos = camPos
     backPos %= MW
