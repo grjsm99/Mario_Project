@@ -1,5 +1,6 @@
 from pico2d import *
 from Gravity import *
+import Framework
 class Mob(Gravity):
     def __init__(self, x, y, types):
         self.frame = 0
@@ -27,18 +28,18 @@ class Mob(Gravity):
             self.flip = False
         if self.xsp > 0:
             self.flip = True
-        self.yacc-=0.03
-        if self.ysp > -10:
-            self.ysp += self.yacc   
+        self.yacc-=0.04 * Framework.runtime
+        if self.ysp > -20 * Framework.runtime:
+            self.ysp += self.yacc * Framework.runtime
 
         self.Collide(tileset)
-        self.frame+=1
-        if self.xsp != 0 and self.ysp == 0 and self.frame%5==0: # 걷는모션
+        self.frame+=Framework.runtime
+        if self.xsp != 0 and self.ysp == 0 and self.frame > 5: # 걷는모션
             if(self.motion == 0): self.motion = 1
             elif(self.motion == 1): self.motion = 0
             self.frame=0
-        self.xpos += self.xsp
-        self.ypos += self.ysp
+        self.xpos += self.xsp * Framework.runtime
+        self.ypos += self.ysp * Framework.runtime
         
     def ColAct(self, type, t):
         if type == 0: # 착지

@@ -12,13 +12,12 @@ def init():
     global logo_time
     logo_time = 0
     num_img = load_image('./img/num.png')
-    if Framework.life>0:
 
+    Framework.life -= 1
+    if Framework.life>0:
         img = load_image('./img/life_s.png')
     else:
         img = load_image('./img/gover.png')
-
-    Framework.life -= 1
 
 def exit():
     print("life exit")
@@ -32,7 +31,8 @@ def handle_events():
 def draw():
     clear_canvas()
     img.draw_to_origin(0, 0)
-    num_img.clip_draw(Framework.life * 16, 0, 16, 16, 540, 370)
+    if(Framework.life>0):
+        num_img.clip_draw(Framework.life * 16, 0, 16, 16, 540, 370)
     update_canvas()
 
 

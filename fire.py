@@ -29,16 +29,16 @@ class Fire(Gravity):
 
 
     def motionUpdate(self, tileset):
-        self.timer -= 1
-        self.yacc-=0.03
-        if self.ysp > -10:
-            self.ysp += self.yacc   
+        self.timer -= 1 * Framework.runtime
+        self.yacc-=0.04 * Framework.runtime
+        if self.ysp > -20 * Framework.runtime:
+            self.ysp += self.yacc * Framework.runtime
 
         self.Collide(tileset)
 
-        self.xpos += self.xsp
-        self.ypos += self.ysp
-        if(self.timer==0):
+        self.xpos += self.xsp * Framework.runtime
+        self.ypos += self.ysp * Framework.runtime
+        if(self.timer<0):
             self.dl = True
         
     def ColAct(self, type, t):

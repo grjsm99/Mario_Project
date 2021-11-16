@@ -1,8 +1,9 @@
 from pico2d import *
 from Gravity import *
 from fire import Fire
-from Framework import life
+import Framework
 MW, MH = 1024, 768
+
 
 class Mario(Gravity):
     def __init__(self):
@@ -28,6 +29,7 @@ class Mario(Gravity):
         self.isFireAni = False
         self.mushRate = 0
         self.fireRate = 0
+        self.frrate = 0
 
         self.isDeadAni = False
         self.deadDelay = False
@@ -41,16 +43,16 @@ class Mario(Gravity):
     def mobHit(self):
         if(self.mode == 2): # 불쏘는 상태일때
             self.isFireAni = True
-            self.fireRate = 9
+            self.fireRate = 0
             self.inviscount = 100
         elif(self.mode == 1):
             self.isMushAni = True
-            self.mushRate = 9
+            self.mushRate = 0
             self.inviscount = 100
         else:
             self.motion = 6
-            self.ysp = 10
-            self.yacc = -0.3
+            self.ysp = 8 * Framework.runtime
+            self.yacc = -0.16 * (Framework.runtime ** 2)
             self.isDeadAni = True
         
     def launchFb(self):
@@ -78,42 +80,48 @@ class Mario(Gravity):
         if(type == 2): # 버섯
             if self.mode == 0:
                 self.isMushAni = True
-                self.mushRate = 9
+                self.mushRate = 0
         if(type == 3): # 꽃
             if self.mode == 1:
                 self.isFireAni = True
-                self.fireRate = 9
+                self.fireRate = 0
         if(type == 4): # 1UP
-            life+=1
+            Framework.life+=1
         if(type == 1): # 동전
             pass
 
             
     def mush_Ani(self):
-        if self.mode == 1:
-            self.mode = 0
-            self.width = 27
-            self.height = 39
-            delay(0.05)
-        elif self.mode == 0:
-            self.mode = 1
-            self.width = 28
-            self.height = 52
-            delay(0.05)
-        self.mushRate -= 1
-        if self.mushRate == 0:
+        print(self.mushRate, Framework.runtime)
+        if self.mushRate > 5:
+            if self.mode == 1:
+                self.mode = 0
+                self.width = 27
+                self.height = 39
+        
+            elif self.mode == 0:
+                self.mode = 1
+                self.width = 28
+                self.height = 52
+            self.mushRate = 0
+            self.frrate += 1
+        self.mushRate += Framework.runtime
+        if self.frrate == 9:
             self.isMushAni = False
+            self.frrate = 0
 
     def fire_Ani(self):
-        if self.mode == 2:
-            self.mode = 1
-            delay(0.05)
-        elif self.mode == 1:
-            self.mode = 2
-            delay(0.05)
-        self.fireRate -= 1
-        if self.fireRate == 0:
+        if self.fireRate > 5:
+            if self.mode == 2:
+                self.mode = 1
+            elif self.mode == 1:
+                self.mode = 2
+            self.fireRate = 0
+            self.frrate += 1
+        self.fireRate += Framework.runtime
+        if self.frrate == 9:
             self.isFireAni = False
+            self.frrate = 0
 
     def delayCheck(self):
         if self.deadDelay == False and self.isDeadAni == True:
@@ -121,7 +129,7 @@ class Mario(Gravity):
             delay(0.7)
 
     def dead_Ani(self):
-        self.ypos += self.ysp
+        self.ypos += self.ysp 
         self.ysp += self.yacc
         if self.ypos < 0:
             self.isdead = True
@@ -132,7 +140,7 @@ class Mario(Gravity):
     def xyrun(self, type, speed):
         if type==0: # x
             self.fric = False
-            self.xsp = speed
+            self.xsp = speed# * RUN_SPEED_PPS
         if type==1: # y
             self.ysp = speed
 
@@ -202,19 +210,19 @@ class Mario(Gravity):
             self.flip = False
         if self.xsp > 0:
             self.flip = True
-        self.yacc-=0.03
-        if self.ysp > -10:
-            self.ysp += self.yacc   
+        self.yacc-=0.04 * Framework.runtime
+        if self.ysp > -20 * Framework.runtime:
+            self.ysp += self.yacc * Framework.runtime
 
         self.Collide(tileset)
 
         
-        self.frame+=1
+        self.frame += Framework.runtime
         if self.ysp > 0:
             self.motion = 2
         elif self.ysp < 0:
             self.motion = 3   
-        elif self.xsp != 0 and self.ysp == 0 and self.frame%5==0: # 걷는모션
+        elif self.xsp != 0 and self.ysp == 0 and self.frame > 5: # 걷는모션
             if(self.motion == 0): self.motion = 1
             elif(self.motion == 1): self.motion = 0
             self.frame=0
@@ -222,10 +230,9 @@ class Mario(Gravity):
         if self.ysp != 0:
             self.isjump = True
         if self.aning == False:
-            if self.xpos + self.xsp > 0: self.xpos += self.xsp
-            self.ypos += self.ysp
+            if self.xpos + self.xsp > 0: self.xpos += self.xsp * Framework.runtime
+            self.ypos += self.ysp * Framework.runtime
         self.chView()
-        
 
         if self.isStop() == True:
             if self.uplook == 1:

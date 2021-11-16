@@ -1,5 +1,5 @@
 from Component import *
-
+import Framework
 class Block(Component):
     def __init__(self, left, up, spt):
         self.x = left
@@ -32,7 +32,7 @@ class Block(Component):
     
     def ani(self):
         if self.isAni == True:
-            self.subframe += 1
-            if self.subframe == 10:
+            self.subframe += Framework.runtime
+            if self.subframe >= 10:
                 self.frame = (self.frame + 1) % self.frrate
                 self.subframe = 0

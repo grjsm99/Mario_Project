@@ -1,6 +1,6 @@
 from pico2d import *
 from Gravity import *
-
+import Framework
 class Item(Gravity):
     def __init__(self, x, y, types):
         self.xpos = x * 32
@@ -11,11 +11,9 @@ class Item(Gravity):
         if self.type == 0:
             self.frame = 0
 
-        if self.type == 1:
-            self.ysp = 0
+        if self.type == 1 or self.type == 3:
             self.xsp = -1
-            self.yacc = 0
-
+            self.ysp = 0
         if self.type == 5:
             self.ysp = 5
             self.xsp = 1
@@ -32,23 +30,24 @@ class Item(Gravity):
 
     def motionUpdate(self, tileset):
         if self.type == 0: # 동전
-            self.frame += 1
-            if self.frame % 10 == 0:
+            self.frame += Framework.runtime
+            if self.frame > 10:
                 self.motion += 1
                 self.motion %= 4
-        if self.type == 1: # 버섯
+                self.frame = 0
+        if self.type == 1 or self.type == 3: # 버섯
             if self.xsp < 0:
                 self.flip = False
             if self.xsp > 0:
                 self.flip = True
-            self.yacc-=0.03
-            if self.ysp > -10:
-                self.ysp += self.yacc   
+            self.yacc-=0.04 * Framework.runtime
+            if self.ysp > -20 * Framework.runtime:
+                self.ysp += self.yacc * Framework.runtime 
 
             self.Collide(tileset)
 
-            self.xpos += self.xsp
-            self.ypos += self.ysp
+            self.xpos += self.xsp * Framework.runtime
+            self.ypos += self.ysp * Framework.runtime
         
     def ColAct(self, type, t):
         if type == 0: # 착지

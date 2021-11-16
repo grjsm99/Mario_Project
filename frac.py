@@ -1,5 +1,5 @@
 from pico2d import *
-
+import Framework
 class Frac:
 
     def __init__(self, x, y, xsp, ysp):
@@ -10,7 +10,7 @@ class Frac:
     def upd(self):
         self.x += self.xsp
         self.y += self.ysp
-        self.ysp -= 0.3
+        self.ysp -= Framework.runtime
     def rtxy(self):
         return self.x, self.y
 

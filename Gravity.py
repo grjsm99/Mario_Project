@@ -1,11 +1,15 @@
 from pico2d import *
+import Framework
 MW, MH = 1024, 768
+
+
 class Gravity:
     xpos = 0
     ypos = 0
     width = 0
     height = 0
     yacc = 0
+    
     def rtxy(self):
         print ('x = ' , self.xpos , ', y = ' , self.ypos)
         
