@@ -5,7 +5,7 @@ class Fire(Gravity):
     def __init__(self, x, y, isr):
         self.xpos = x + 14
         self.ypos = y + 26
-        self.ysp = 3
+        self.ysp = 2
         self.yacc = 0
         self.height = 16
         self.width = 16

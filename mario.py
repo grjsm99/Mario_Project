@@ -83,6 +83,9 @@ class Mario(Gravity):
                 self.isMushAni = True
                 self.mushRate = 0
         if(type == 3): # 꽃
+            if self.mode<2:   
+                self.width = 28
+                self.height = 52
                 self.isFireAni = True
                 self.fireRate = 0
         if(type == 4): # 1UP
