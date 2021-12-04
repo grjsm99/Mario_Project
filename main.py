@@ -52,6 +52,21 @@ def init():
         from maptile2 import Moblist
         from maptile2 import Itemlist
         from maptile2 import goal
+    if(Framework.selectStage == 2):
+        from maptile3 import Mapset
+        from maptile3 import Moblist
+        from maptile3 import Itemlist
+        from maptile3 import goal
+    if(Framework.selectStage == 3):
+        from maptile4 import Mapset
+        from maptile4 import Moblist
+        from maptile4 import Itemlist
+        from maptile4 import goal
+    if(Framework.selectStage == 4):
+        from maptile5 import Mapset
+        from maptile5 import Moblist
+        from maptile5 import Itemlist
+        from maptile5 import goal
     print("Init")
     global mimglist
     global bimglist
@@ -78,7 +93,7 @@ def init():
     global nimg
     Tilelist = copy.deepcopy(Mapset)
     Moblist_ = copy.deepcopy(Moblist)
-    Itemlist_ = copy.deepcopy(Itemlist)
+    Itemlist_ = Itemlist
     map_bg = load_image('./img/bg.jpg')
     fimg = load_image('./img/frac.png')
     fbimg = load_image('./img/fireball.png')
