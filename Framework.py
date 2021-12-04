@@ -8,6 +8,7 @@ temp = None
 runningState = None
 selectStage = 1
 life = 2
+score = 0
 
 
 PIXEL_PER_METER = 32.0

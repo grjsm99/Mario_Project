@@ -53,8 +53,9 @@ def update():
             else:   
                 quit()
         else:
-            logo_time = 0
-            Framework.chstate(select_state)
+            if(logo_time > 3.0):
+                logo_time = 0
+                Framework.chstate(select_state)
         
     delay(0.01)
     logo_time += 0.01

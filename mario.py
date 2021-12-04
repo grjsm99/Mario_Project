@@ -6,7 +6,22 @@ MW, MH = 1024, 768
 
 
 class Mario(Gravity):
+    s_jump = None
+    s_fireball = None
+    s_coin = None
+    s_1up = None
+    s_mush = None
+    s_mobhit = None
+    s_dead = None
+
     def __init__(self):
+        Mario.s_jump = load_wav('./sound/jump.wav')
+        Mario.s_fireball = load_wav('./sound/fireball.wav')
+        Mario.s_dead = load_wav('./sound/lifelost.wav')
+        Mario.s_coin = load_wav('./sound/coin.wav')
+        Mario.s_1up = load_wav('./sound/1up.wav')
+        Mario.s_mobhit = load_wav('./sound/mobhit1.wav')
+        Mario.s_mush = load_wav('./sound/mushroom.wav')
         self.img = load_image('./img/mario_t.png')
         self.frame = 0
         self.mode = 0
@@ -36,6 +51,7 @@ class Mario(Gravity):
         self.isdead = False
         self.inviscount = 0
         self.itmpdata = None
+        self.score = 0
 
     def chuplook(self, value):  # 위아래 보는상태
         self.uplook = value
@@ -50,6 +66,7 @@ class Mario(Gravity):
             self.mushRate = 0
             self.inviscount = 1000
         else:
+            Mario.s_dead.play()
             self.motion = 6
 
             self.ysp = 8 * Framework.runtime
@@ -58,6 +75,7 @@ class Mario(Gravity):
         
     def launchFb(self):
         if(self.mode == 2):
+            Mario.s_fireball.play()
             self.firelist.append(Fire(self.xpos, self.ypos, self.flip))
     
     def drFb(self):
@@ -72,6 +90,8 @@ class Mario(Gravity):
         self.fric = True
 
     def jump(self, power):
+        if power >= 10:
+            Mario.s_jump.play()
         self.isjump = True
         self.ysp = power
 
@@ -80,17 +100,22 @@ class Mario(Gravity):
         print(type)
         if(type == 2): # 버섯
             if self.mode == 0:
+                Mario.s_mush.play()
                 self.isMushAni = True
                 self.mushRate = 0
         if(type == 3): # 꽃
-            if self.mode<2:   
+            if self.mode<2:
+                Mario.s_mush.play()   
                 self.width = 28
                 self.height = 52
                 self.isFireAni = True
                 self.fireRate = 0
         if(type == 4): # 1UP
+            Mario.s_1up.play()
             Framework.life+=1
         if(type == 1): # 동전
+            Mario.s_coin.play()
+            Framework.score+=1
             pass
 
             
@@ -170,6 +195,7 @@ class Mario(Gravity):
             if (cleft < moblist[i].xpos + moblist[i].width) and (cright > moblist[i].xpos) and (cdown < moblist[i].ypos + moblist[i].height):
                 if self.ysp < 0 and cdown - moblist[i].ypos - moblist[i].height > self.ysp and not cup < moblist[i].ypos + moblist[i].height: # 몹 밟음
                     self.yacc = 0
+                    Mario.s_mobhit.play()
                     self.jump(6)
                     self.inviscount = 200
                     del moblist[i]

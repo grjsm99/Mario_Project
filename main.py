@@ -36,6 +36,11 @@ Itemlist_ = None
 Moblist_ = None
 itmpdata = None
 goalp = ( 1024, 0 )
+bgm = None
+clearbgm = None
+cnimg = None
+lnimg = None
+nimg = None
 def init():
     if(Framework.selectStage == 0):
         from maptile1 import Mapset
@@ -66,6 +71,11 @@ def init():
     global iimglist
     global goalp
     global gimg
+    global bgm
+    global clearbgm
+    global cnimg
+    global lnimg
+    global nimg
     Tilelist = copy.deepcopy(Mapset)
     Moblist_ = copy.deepcopy(Moblist)
     Itemlist_ = copy.deepcopy(Itemlist)
@@ -73,6 +83,9 @@ def init():
     fimg = load_image('./img/frac.png')
     fbimg = load_image('./img/fireball.png')
     gimg = load_image('./img/goal.png')
+    cnimg = load_image('./img/coinnum.png')
+    lnimg = load_image('./img/lifenum.png')
+    nimg = load_image('./img/num.png')
     bimglist = []
     fraclist = []
     mimglist = []
@@ -85,6 +98,10 @@ def init():
         iimglist.append(load_image("./img/i%d.png" % i))
     camPos = 0
     backPos = 0
+
+    bgm = load_music('./sound/bgm.mp3')
+    clearbgm = load_music('./sound/round_clear.wav')
+    bgm.repeat_play()
 
     goalp = goal
     chr = Mario()
@@ -187,9 +204,16 @@ def draw():
     draw_fb()
     chr.draw()
 
+    cnimg.draw(800, 720)
+    lnimg.draw(100, 720)
+    nimg.clip_draw(Framework.life * 16, 0, 16, 32, 200, 720)
+    if(Framework.score>9):
+        nimg.clip_draw((Framework.score // 10) * 16, 0, 16, 32, 900, 720)
+    nimg.clip_draw((Framework.score % 10) * 16, 0, 16, 32, 916, 720)
     gimg.draw_to_origin(goalp[0] * 32 - camPos, goalp[1] * 32 - 32)
     update_canvas()
     chr.delayCheck()
+
 
 def draw_mob():
     for i in range(len(Moblist_)):
@@ -268,6 +292,8 @@ def update():
         chr.xyrun(0,0)
 
     if chr.xpos + chr.width > goalp[0] * 32 and chr.xpos < goalp[0] * 32 + 47 and chr.ypos + chr.height > goalp[1] * 32 + 64 and chr.ypos < goalp[1] * 32 + 64 and chr.isDeadAni == False:
+        bgm.stop()
+        clearbgm.play()
         print(chr.xpos , goalp[0] * 32)
         life_state.state_type = 1
         Framework.chstate(life_state)
@@ -283,6 +309,7 @@ def update():
     if chr.isMushAni == True:
         chr.mush_Ani()
     elif chr.isDeadAni == True:
+        bgm.stop()
         chr.dead_Ani()
     elif chr.isFireAni == True:
         chr.fire_Ani()
