@@ -192,6 +192,9 @@ def handle_events():
                 chr.rtxy()
                 for i in range(len(Moblist_)):
                     Moblist_[i].rtxy()
+            if event.key == SDLK_ESCAPE:
+                bgm.stop()
+                Framework.chstate(select_state)
         if event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT:
                 isRight = False   
@@ -311,6 +314,8 @@ def update():
         clearbgm.play()
         print(chr.xpos , goalp[0] * 32)
         life_state.state_type = 1
+        if(life_state.stage < Framework.selectStage):
+            life_state.stage = Framework.selectStage+1
         Framework.chstate(life_state)
         
         return 

@@ -22,10 +22,12 @@ def init():
         else:
             img = load_image('./img/gover.png')
     else:
-        logo_time -= 1
-        select_state.roundclear[Framework.selectStage+1] = 30
-        img = load_image('./img/clear.png')
-
+        logo_time -= 2
+        if(stage<5):
+            select_state.roundclear[Framework.selectStage+1] = 30
+            img = load_image('./img/clear.png')
+        else:
+            img = load_image('./img/clear.png')
 def exit():
     print("life exit")
     global img

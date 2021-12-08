@@ -5,7 +5,7 @@ import main
 img = None
 roundimg = None
 rounddata = ((0, 30, 30, 173, 355), (0, 30, 30, 174, 517), (0, 30, 30, 421, 472), (0, 30, 30, 720, 368), (0, 30, 30, 787, 320))
-roundclear = [30,0,0,0,0]
+roundclear = [30,30, 30, 30, 30]
 def init():
     global img
     global roundimg
